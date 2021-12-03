@@ -4,10 +4,7 @@ package com.taquin;
 
 import javafx.util.Pair;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * A class representing the 15puzzle
@@ -19,6 +16,7 @@ public class Puzzle {
 	private Agent[][] destinationGrid;
 	private Agent[][] currentGrid;
 	private Map<Agent, Pair<Integer,Integer>> agentPos;
+	private Map<Agent, Pair<Integer,Integer>> agentDestination;
 	private int nbAgent;
 	private int sizeX,sizeY;
 
@@ -27,10 +25,16 @@ public class Puzzle {
 		this.sizeX = sizeX;
 		this.sizeY=sizeY;
 		this.agentPos = new HashMap<>();
+		this.agentDestination = new HashMap<>();
 		agentList = generateAgents();
-		currentGrid = generateRandomGrid();
-		destinationGrid = generateRandomGrid();
+		currentGrid = generateRandomGrid(this.agentPos);
+		destinationGrid = generateRandomGrid(this.agentDestination);
+	}
 
+	public void runResolution(){
+		for(Agent agent : agentList){
+			agent.start();
+		}
 	}
 
 	private Agent[] generateAgents() {
@@ -41,7 +45,7 @@ public class Puzzle {
 		return tempList;
 	}
 
-	public Agent[][] generateRandomGrid(){
+	public Agent[][] generateRandomGrid(Map<Agent,Pair<Integer,Integer>> posMap){
 		Agent[][] tempGrid = new Agent[sizeY][sizeX];
 		Random random = new Random();
 		int agentIndex = 0;
@@ -50,13 +54,40 @@ public class Puzzle {
 			int tempY = random.nextInt(sizeY);
 			if(tempGrid[tempY][tempX] == null){
 				tempGrid[tempY][tempX] = agentList[agentIndex];
-				agentPos.put(agentList[agentIndex],new Pair<>(tempX,tempY));
+				posMap.put(agentList[agentIndex],new Pair<>(tempX,tempY));
 				agentIndex++;
 			}
 		}
 		return tempGrid;
 	}
 
+	public Agent[] getAgentList() {
+		return agentList;
+	}
+
+	public Agent[][] getDestinationGrid() {
+		return destinationGrid;
+	}
+
+	public Agent[][] getCurrentGrid() {
+		return currentGrid;
+	}
+
+	public Map<Agent, Pair<Integer, Integer>> getAgentPos() {
+		return agentPos;
+	}
+
+	public int getNbAgent() {
+		return nbAgent;
+	}
+
+	public int getSizeX() {
+		return sizeX;
+	}
+
+	public int getSizeY() {
+		return sizeY;
+	}
 
 	@Override
 	public String toString() {
@@ -88,6 +119,19 @@ public class Puzzle {
 			sb.append("|\n");
 		}
 		sb.append('|').append("-".repeat(Math.max(0, sizeX*3)+1)).append("|\n");
+		/*System.out.println("Agent destination :");
+		this.agentDestination.forEach((key, value) -> System.out.print(key.getID() + " " + value+ " / "));
+		System.out.println("\nAgent pos :");
+		this.agentPos.forEach((key, value) -> System.out.print(key.getID() + " " + value+ " / "));*/
 		return sb.toString();
+	}
+
+	public boolean isFinished() {
+		for(Map.Entry<Agent, Pair<Integer, Integer>> entries : agentPos.entrySet()){
+			if(!agentDestination.get(entries.getKey()).equals(entries.getValue())){
+				return false;
+			}
+		}
+		return true;
 	}
 }
