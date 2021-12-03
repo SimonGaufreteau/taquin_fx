@@ -61,16 +61,36 @@ public class Puzzle {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("Environnement :\n");
-		sb.append('|').append("-".repeat(Math.max(0, sizeX*3))).append("|\n");
-		for(int i=0;i<sizeX;i++){
-			sb.append("|");
-			for(int j=0;j<sizeY;j++){
-				sb.append(' ').append(currentGrid[j][i]==null?" ":currentGrid[j][i].getID()).append(' ');
-			}
-			sb.append("|\n");
-		}
-		sb.append('|').append("-".repeat(Math.max(0, sizeX*3))).append('|');
-
+//		sb.append('|').append("-".repeat(Math.max(0, sizeX*3))).append("|\n");
+//		for(int i=0;i<sizeX;i++){
+//			sb.append("|");
+//			for(int j=0;j<sizeY;j++){
+//				sb.append(' ').append(currentGrid[j][i]==null?" ":currentGrid[j][i].getID()).append(' ');
+//			}
+//			sb.append("|\n");
+//		}
+//		sb.append('|').append("-".repeat(Math.max(0, sizeX*3))).append('|');
+//
+//		return sb.toString();
+		// Agents
+        sb.append("\n\nAgents :\n");
+        sb.append('|').append("-".repeat(Math.max(0, sizeX*3))).append(" |\n");
+        for(int i=0;i<sizeX;i++){
+            sb.append("| ");
+            for(int j=0;j<sizeY;j++){
+                if(currentGrid[j][i]==null) {
+                    sb.append("   ");
+                }else{
+                    int id = currentGrid[j][i].getID();
+                    int l = (""+id).length();
+                    if(l<2) sb.append('0');
+                    sb.append(currentGrid[j][i].getID());
+					sb.append(' ');
+                }
+            }
+            sb.append("|\n");
+        }
+        sb.append('|').append("-".repeat(Math.max(0, sizeX*3))).append(" |");
 		return sb.toString();
 	}
 }
