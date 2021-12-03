@@ -89,6 +89,10 @@ public class Puzzle {
 		return sizeY;
 	}
 
+	public Map<Agent, Pair<Integer, Integer>> getAgentDestination() {
+		return agentDestination;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("Destination state :\n");
