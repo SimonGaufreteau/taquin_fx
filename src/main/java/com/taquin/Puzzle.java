@@ -74,7 +74,7 @@ public class Puzzle {
 //		return sb.toString();
 		// Agents
         sb.append("\n\nAgents :\n");
-        sb.append('|').append("-".repeat(Math.max(0, sizeX*3))).append(" |\n");
+        sb.append('|').append("-".repeat(Math.max(0, sizeX*3)+1)).append("|\n");
         for(int i=0;i<sizeX;i++){
             sb.append("| ");
             for(int j=0;j<sizeY;j++){
@@ -90,7 +90,7 @@ public class Puzzle {
             }
             sb.append("|\n");
         }
-        sb.append('|').append("-".repeat(Math.max(0, sizeX*3))).append(" |");
+        sb.append('|').append("-".repeat(Math.max(0, sizeX*3)+1)).append("|");
 		return sb.toString();
 	}
 }
