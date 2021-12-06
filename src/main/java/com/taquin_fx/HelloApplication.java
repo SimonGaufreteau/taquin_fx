@@ -22,6 +22,7 @@ public class HelloApplication extends Application implements Observer {
 	HashMap<Agent, Color> colorMap;
 	HashMap<Pair<Integer, Integer>, Rectangle> rectCoord;
 	GridPane gP;
+	Scene sc;
 	private final Color[] colorsList = {Color.BLACK, Color.BLUE, Color.GREEN, Color.RED, Color.PURPLE, Color.YELLOW, Color.ORANGE, Color.BROWN};
 
 	public HelloApplication(Puzzle pz) {
@@ -35,12 +36,8 @@ public class HelloApplication extends Application implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		Platform.runLater(() -> {
-			//Appelée quand setchanged into notifyobservers
-			//On applique les changements du model à l'UI
-			//Comment update l'UI ? Dupli code ok je suppose ?
-			//ca m'a pété les couilles battez vous, soit les agents sont chacun observables, soit le puzlle l'est et les agents doivent notifier le puzzle
 
-			//gP.getChildren().clear();
+			gP.getChildren().clear();
 			System.out.println("Updating UI");
 
 			//Useful variables
@@ -54,30 +51,9 @@ public class HelloApplication extends Application implements Observer {
 				}else{
 					rec.setFill(Color.WHITE);
 				}
+				gP.add(rec, coord.getKey(), coord.getValue());
 			}
-
-/*				for (int row = 0; row < sizeX; row++) {
-				for (int col = 0; col < sizeY; col++) {
-					Rectangle rec = new Rectangle();
-
-					//Color
-
-
-					//Size && fill
-					rec.setWidth(tileSizeY);
-					rec.setHeight(tileSizeX);
-					rec.setFill(tileColor);
-
-
-					GridPane.setRowIndex(rec, row);
-					GridPane.setColumnIndex(rec, col);
-					gP.getChildren().addAll(rec);
-				}
-			}*/
 		});
-
-
-
 	}
 
 	@Override
@@ -108,13 +84,12 @@ public class HelloApplication extends Application implements Observer {
 					if (colCount == 8) {
 						colCount=0;
 					}
-
-					Pair pair = new Pair(col, row);
-					rectCoord.put(pair, rec);
-
 					Agent agent = pz.getAgent(col, row);
 					colorMap.put(agent, tileColor);
 				} else tileColor = Color.WHITE;
+
+				Pair pair = new Pair(col, row);
+				rectCoord.put(pair, rec);
 
 				//Size && fill
 				rec.setWidth(tileSizeY);
@@ -122,13 +97,13 @@ public class HelloApplication extends Application implements Observer {
 				rec.setFill(tileColor);
 
 
-				GridPane.setRowIndex(rec, row);
-				GridPane.setColumnIndex(rec, col);
-				gP.getChildren().addAll(rec);
+				//GridPane.setRowIndex(rec, row);
+				//GridPane.setColumnIndex(rec, col);
+				gP.add(rec, col, row);
 			}
 		}
 
-		Scene sc = new Scene(gP, 1024, 1024, true);
+		sc = new Scene(gP, 1024, 1024, true);
 		stage.setScene(sc);
 		stage.setTitle("TAQUIN très TAQUIN");
 
