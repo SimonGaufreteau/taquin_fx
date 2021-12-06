@@ -11,7 +11,7 @@ import java.util.*;
  * The grid is of size Agent[sizeY][sizeX].
  * So to access an element at position (x,y), use : currentGrid[y][x]
  */
-public class Puzzle {
+public class Puzzle{
 	private Agent[] agentList;
 	private Agent[][] destinationGrid;
 	private Agent[][] currentGrid;
@@ -72,6 +72,8 @@ public class Puzzle {
 	public Agent[][] getCurrentGrid() {
 		return currentGrid;
 	}
+
+	public Agent getAgent(int i, int j) { return currentGrid[i][j]; }
 
 	public Map<Agent, Pair<Integer, Integer>> getAgentPos() {
 		return agentPos;
@@ -136,6 +138,10 @@ public class Puzzle {
 				return false;
 			}
 		}
+		return true;
+	}
+
+	public boolean moveAgent(Agent agent, Direction top) {
 		return true;
 	}
 }
