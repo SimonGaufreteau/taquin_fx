@@ -8,10 +8,7 @@ import java.io.IOException;
 
 public class MainApplication extends Application {
 
-    public static void main(String[] args) {
-        launch();
-
-    }
+    public static void main(String[] args) { launch(); }
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -19,7 +16,8 @@ public class MainApplication extends Application {
         Stage st = new Stage();
         HelloApplication happ = new HelloApplication(pz);
 
-        //pz.addObserver(happ);
+        pz.addObserver(happ);
         happ.start(st);
+        pz.runResolution();
     }
 }

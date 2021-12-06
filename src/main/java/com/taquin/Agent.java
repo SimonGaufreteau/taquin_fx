@@ -4,8 +4,9 @@ import javafx.util.Pair;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Observable;
 
-public class Agent extends Thread{
+public class Agent extends Thread {
 
 	private final int ID;
 	private Puzzle puzzle;
@@ -58,13 +59,29 @@ public class Agent extends Thread{
 
 		if(!moved){
 			switch(directions[1]) {
-				case TOP -> y - 1 >= 0 && currentGrid[y - 1][x] == null && puzzle.moveAgent(this, Direction.TOP);
+				case TOP -> {
+					if (y - 1 >= 0 && currentGrid[y - 1][x] == null) {
+						puzzle.moveAgent(this, Direction.TOP);
+					}
+				}
 
-				case RIGHT -> x + 1 < currentGrid[0].length && currentGrid[y][x + 1] == null && puzzle.moveAgent(this, Direction.RIGHT);
+				case RIGHT -> {
+					if (x + 1 < currentGrid[0].length && currentGrid[y][x + 1] == null) {
+						puzzle.moveAgent(this, Direction.RIGHT);
+					}
+				}
 
-				case BOTTOM -> y + 1 < currentGrid.length && currentGrid[y + 1][x] == null && puzzle.moveAgent(this, Direction.BOTTOM);
+				case BOTTOM -> {
+					if (y + 1 < currentGrid.length && currentGrid[y + 1][x] == null) {
+						puzzle.moveAgent(this, Direction.BOTTOM);
+					}
+				}
 
-				case LEFT -> x - 1 >= 0 && currentGrid[y][x - 1] == null && puzzle.moveAgent(this, Direction.LEFT);
+				case LEFT -> {
+					if (x - 1 >= 0 && currentGrid[y][x - 1] == null) {
+						puzzle.moveAgent(this, Direction.LEFT);
+					}
+				}
 			};
 		}
 	}

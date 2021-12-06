@@ -11,7 +11,7 @@ import java.util.*;
  * The grid is of size Agent[sizeY][sizeX].
  * So to access an element at position (x,y), use : currentGrid[y][x]
  */
-public class Puzzle{
+public class Puzzle extends Observable {
 	private Agent[] agentList;
 	private Agent[][] destinationGrid;
 	private Agent[][] currentGrid;
@@ -142,6 +142,9 @@ public class Puzzle{
 	}
 
 	public boolean moveAgent(Agent agent, Direction top) {
+		setChanged();
+		notifyObservers();
+		System.out.println("An agent moved, observers notified");
 		return true;
 	}
 }
