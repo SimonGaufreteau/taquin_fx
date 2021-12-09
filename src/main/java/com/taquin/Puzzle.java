@@ -106,19 +106,19 @@ public class Puzzle extends Observable {
 		return sb.toString();
 	}
 
-	private String printGrid(Agent[][] currentGrid) {
+	public String printGrid(Agent[][] currentGrid) {
 		StringBuilder sb = new StringBuilder();
 		sb.append('|').append("-".repeat(Math.max(0, sizeX*3)+1)).append("|\n");
-		for(int i=0;i<sizeX;i++){
+		for(int i=0;i<sizeY;i++){
 			sb.append("| ");
-			for(int j=0;j<sizeY;j++){
-				if(currentGrid[j][i]==null) {
+			for(int j=0;j<sizeX;j++){
+				if(currentGrid[i][j]==null) {
 					sb.append("   ");
 				}else{
-					int id = currentGrid[j][i].getID();
+					int id = currentGrid[i][j].getID();
 					int l = (""+id).length();
 					if(l<2) sb.append('0');
-					sb.append(currentGrid[j][i].getID());
+					sb.append(id);
 					sb.append(' ');
 				}
 			}
@@ -144,18 +144,17 @@ public class Puzzle extends Observable {
 	/**
 	 * Move the agent in the given direction.
 	 * @param agent The agent to be moved
-	 * @param top The direction (must be checked valid before
+	 * @param dir The direction (must be checked valid before
 	 * @return #TODO
 	 */
-	public synchronized boolean moveAgent(Agent agent, Direction top) {
+	public synchronized boolean moveAgent(Agent agent, Direction dir) {
 		//System.out.println("Agent "+agent.getID()+" is moving");
 		Pair<Integer, Integer> coords = this.agentPos.get(agent);
-		int y = coords.getValue();
 		int x = coords.getKey();
-		this.currentGrid[y][x]=null;
+		int y = coords.getValue();
 		int newX = x;
 		int newY = y;
-		switch (top){
+		switch (dir){
 			case TOP -> newY = y-1;
 			case RIGHT -> newX = x+1;
 			case BOTTOM -> newY = y+1;
@@ -165,6 +164,7 @@ public class Puzzle extends Observable {
 		this.currentGrid[newY][newX] = agent;
 		Pair<Integer,Integer> newCoords = new Pair<>(newX,newY);
 		this.agentPos.put(agent,newCoords);
+		System.out.println(this);
 		setChanged();
 		notifyObservers();
 		return true;

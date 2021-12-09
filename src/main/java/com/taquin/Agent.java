@@ -4,7 +4,9 @@ import javafx.util.Pair;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Observable;
+import java.util.Random;
 
 public class Agent extends Thread {
 
@@ -21,9 +23,15 @@ public class Agent extends Thread {
 	public void run() {
 		while(!puzzle.isFinished()) {
 			// Check if the Agent is on the right position
-			if(!puzzle.getAgentDestination().get(this).equals(puzzle.getAgentPos().get(this))){
+			Pair<Integer, Integer> destination = puzzle.getAgentDestination().get(this);
+			Pair<Integer, Integer> currentPos = puzzle.getAgentPos().get(this);
+			if(!(destination.getKey().equals(currentPos.getKey())) || !(destination.getValue().equals(currentPos.getValue()))){
 				// If not, try to move in the best direction
 				move();
+			}
+			else {
+				System.out.println("Agent "+ID+" has arrived");
+				break;
 			}
 			try {
 				Thread.sleep(1000);
@@ -31,6 +39,8 @@ public class Agent extends Thread {
 				e.printStackTrace();
 			}
 		}
+		//System.out.println(puzzle);
+		//System.out.println("Puzzle finished");
 	}
 
 
@@ -44,7 +54,7 @@ public class Agent extends Thread {
 		Agent[][] currentGrid = puzzle.getCurrentGrid();
 		int x = currentPos.getKey();
 		int y = currentPos.getValue();
-		boolean moved = false;
+		boolean moved;
 
 		moved = switch(directions[0]) {
 			case TOP -> y - 1 >= 0 && currentGrid[y - 1][x] == null && puzzle.moveAgent(this, Direction.TOP);
@@ -96,26 +106,42 @@ public class Agent extends Thread {
 
 		if(Math.abs(distX)>Math.abs(distY)){
 			directions[0] = distX>0?Direction.RIGHT:Direction.LEFT;
-			directions[1] = distY>0?Direction.TOP:Direction.BOTTOM;
+			if(distY==0){
+				Random random = new Random();
+				directions[1] = random.nextInt(2)==1?Direction.TOP:Direction.BOTTOM;
+			}
+			else
+				directions[1] = distY>0?Direction.BOTTOM:Direction.TOP;
 		}
 		else {
-			directions[0] = distY>0?Direction.TOP:Direction.BOTTOM;
-			directions[1] = distX>0?Direction.RIGHT:Direction.LEFT;
+			directions[0] = distY>0?Direction.BOTTOM:Direction.TOP;
+			if(distX==0){
+				Random random = new Random();
+				directions[1] = random.nextInt(2)==1?Direction.RIGHT:Direction.LEFT;
+			}
+			else
+				directions[1] = distX>0?Direction.RIGHT:Direction.LEFT;
 		}
 
 		return directions;
 	}
 
-	private int getDistance(Axes x) {
+	private int getDistance(Axes axe) {
 		Pair<Integer,Integer> currentPos = puzzle.getAgentPos().get(this);
-		Pair<Integer,Integer> destinationPos = puzzle.getAgentPos().get(this);
-		if(x.equals(Axes.X)){
+		Pair<Integer,Integer> destinationPos = puzzle.getAgentDestination().get(this);
+		if(axe.equals(Axes.X)){
 			return destinationPos.getKey()-currentPos.getKey();
 		}
 		return destinationPos.getValue()-currentPos.getValue();
 
 	}
 
+	@Override
+	public String toString() {
+		return "Agent{" +
+				"ID=" + ID +
+				'}';
+	}
 
 	private enum Axes {X,Y}
 }
