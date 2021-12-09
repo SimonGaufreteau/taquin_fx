@@ -73,7 +73,7 @@ public class Puzzle extends Observable {
 		return currentGrid;
 	}
 
-	public Agent getAgent(int i, int j) { return currentGrid[i][j]; }
+	public Agent getAgent(int x, int y) { return currentGrid[y][x]; }
 
 	public Map<Agent, Pair<Integer, Integer>> getAgentPos() {
 		return agentPos;
@@ -141,10 +141,32 @@ public class Puzzle extends Observable {
 		return true;
 	}
 
-	public boolean moveAgent(Agent agent, Direction top) {
+	/**
+	 * Move the agent in the given direction.
+	 * @param agent The agent to be moved
+	 * @param top The direction (must be checked valid before
+	 * @return #TODO
+	 */
+	public synchronized boolean moveAgent(Agent agent, Direction top) {
+		//System.out.println("Agent "+agent.getID()+" is moving");
+		Pair<Integer, Integer> coords = this.agentPos.get(agent);
+		int y = coords.getValue();
+		int x = coords.getKey();
+		this.currentGrid[y][x]=null;
+		int newX = x;
+		int newY = y;
+		switch (top){
+			case TOP -> newY = y-1;
+			case RIGHT -> newX = x+1;
+			case BOTTOM -> newY = y+1;
+			case LEFT -> newX = x-1;
+		}
+		this.currentGrid[y][x] = null;
+		this.currentGrid[newY][newX] = agent;
+		Pair<Integer,Integer> newCoords = new Pair<>(newX,newY);
+		this.agentPos.put(agent,newCoords);
 		setChanged();
 		notifyObservers();
-		System.out.println("An agent moved, observers notified");
 		return true;
 	}
 }

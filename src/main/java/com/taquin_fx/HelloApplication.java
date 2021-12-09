@@ -38,10 +38,11 @@ public class HelloApplication extends Application implements Observer {
 		Platform.runLater(() -> {
 
 			gP.getChildren().clear();
-			System.out.println("Updating UI");
+			//System.out.println("Updating UI");
 
 			//Useful variables
 			Agent[][] cR = pz.getCurrentGrid();
+			System.out.println(pz);
 
 			for(Pair<Integer, Integer> coord : rectCoord.keySet()) {
 				Rectangle rec = rectCoord.get(coord);
