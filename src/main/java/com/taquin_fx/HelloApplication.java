@@ -4,6 +4,7 @@ import com.taquin.Agent;
 import com.taquin.Puzzle;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -12,6 +13,7 @@ import javafx.scene.shape.*;
 import javafx.util.Pair;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -20,7 +22,7 @@ public class HelloApplication extends Application implements Observer {
 
 	private final Puzzle pz;
 	HashMap<Agent, Color> colorMap;
-	HashMap<Pair<Integer, Integer>, Rectangle> rectCoord;
+	HashMap<Rectangle, Pair<Integer, Integer>> rectCoord;
 	GridPane gP;
 	Scene sc;
 	private final Color[] colorsList = {Color.BLACK, Color.BLUE, Color.GREEN, Color.RED, Color.PURPLE, Color.YELLOW, Color.ORANGE, Color.BROWN};
@@ -32,19 +34,27 @@ public class HelloApplication extends Application implements Observer {
 		rectCoord = new HashMap<>();
 	}
 
-
+	//TODO Swap les param de la hashmap pour itérer sur le childset et plus avoir àle clear -- passer en css -- voir pour use des region pour les border
 	@Override
 	public void update(Observable o, Object arg) {
 		Platform.runLater(() -> {
-
-			gP.getChildren().clear();
+			List<Node> children = gP.getChildren();
+			//gP.getChildren().clear();
 			//System.out.println("Updating UI");
 
 			//Useful variables
 			Agent[][] cR = pz.getCurrentGrid();
 			System.out.println(pz);
 
-			for(Pair<Integer, Integer> coord : rectCoord.keySet()) {
+			for(Node n : gP.getChildren()) {
+				Rectangle rec = (Rectangle) n;
+				Pair<Integer, Integer> coords = rectCoord.get(rec);
+				Agent agent = pz.getAgent(coords.getKey(), coords.getValue());
+				rec.setFill(agent!=null ? colorMap.get(agent) : Color.WHITE);
+			}
+
+
+			/*for(Pair<Integer, Integer> coord : rectCoord.keySet()) {
 				Rectangle rec = rectCoord.get(coord);
 				if(cR[coord.getKey()][coord.getValue()] != null) {
 					Agent agent = pz.getAgent(coord.getKey(), coord.getValue());
@@ -53,7 +63,7 @@ public class HelloApplication extends Application implements Observer {
 					rec.setFill(Color.WHITE);
 				}
 				gP.add(rec, coord.getKey(), coord.getValue());
-			}
+			}*/
 		});
 	}
 
@@ -85,12 +95,12 @@ public class HelloApplication extends Application implements Observer {
 					if (colCount == 8) {
 						colCount=0;
 					}
-					Agent agent = pz.getAgent(col, row);
+					Agent agent = pz.getAgent(row, col);
 					colorMap.put(agent, tileColor);
 				} else tileColor = Color.WHITE;
 
 				Pair pair = new Pair(col, row);
-				rectCoord.put(pair, rec);
+				rectCoord.put(rec, pair);
 
 				//Size && fill
 				rec.setWidth(tileSizeY);
