@@ -2,6 +2,7 @@ package com.taquin_fx;
 
 import com.taquin.Agent;
 import com.taquin.Puzzle;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -10,22 +11,50 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.shape.*;
+import javafx.util.Duration;
 import javafx.util.Pair;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 
 public class HelloApplication extends Application implements Observer {
 
 	private final Puzzle pz;
-	HashMap<Agent, Color> colorMap;
-	HashMap<Rectangle, Pair<Integer, Integer>> rectCoord;
-	GridPane gP;
-	Scene sc;
-	private final Color[] colorsList = {Color.BLACK, Color.BLUE, Color.GREEN, Color.RED, Color.PURPLE, Color.YELLOW, Color.ORANGE, Color.BROWN};
+	private final int WINSIZEX = 800;
+	private final int WINSIZEY = 800;
+	private HashMap<Agent, Color> colorMap;
+	private HashMap<Rectangle, Pair<Integer, Integer>> rectCoord;
+	private GridPane gP;
+	private Stage stage;
+	private Scene sc;
+	//25 distinct colors -- credit to https://mokole.com/palette.html
+	private final Color[] colorsList = {
+			Color.BLACK,
+			Color.LIGHTGRAY,
+			Color.DARKOLIVEGREEN,
+			Color.SADDLEBROWN,
+			Color.MEDIUMSEAGREEN,
+			Color.DARKCYAN,
+			Color.YELLOWGREEN,
+			Color.DARKBLUE,
+			Color.DARKMAGENTA,
+			Color.ORANGERED,
+			Color.ORANGE,
+			Color.YELLOW,
+			Color.LAWNGREEN,
+			Color.SPRINGGREEN,
+			Color.CRIMSON,
+			Color.AQUA,
+			Color.BLUE,
+			Color.FUCHSIA,
+			Color.PALEVIOLETRED,
+			Color.KHAKI,
+			Color.CORNFLOWERBLUE,
+			Color.DEEPPINK,
+			Color.MEDIUMSLATEBLUE,
+			Color.LIGHTSALMON,
+			Color.VIOLET
+	};
 
 	public HelloApplication(Puzzle pz) {
 		super();
@@ -34,17 +63,20 @@ public class HelloApplication extends Application implements Observer {
 		rectCoord = new HashMap<>();
 	}
 
-	//TODO Swap les param de la hashmap pour itérer sur le childset et plus avoir àle clear -- passer en css -- voir pour use des region pour les border
 	@Override
 	public void update(Observable o, Object arg) {
 		Platform.runLater(() -> {
-			List<Node> children = gP.getChildren();
-			//gP.getChildren().clear();
-			//System.out.println("Updating UI");
 
-			//Useful variables
-			Agent[][] cR = pz.getCurrentGrid();
-			System.out.println(pz);
+			//Close app 5 seconds after puzzle completion
+			if(pz.isFinished()) {
+				try {
+					PauseTransition delay = new PauseTransition(Duration.seconds(5));
+					delay.setOnFinished( event -> stage.close() );
+					delay.play();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 
 			for(Node n : gP.getChildren()) {
 				Rectangle rec = (Rectangle) n;
@@ -53,49 +85,38 @@ public class HelloApplication extends Application implements Observer {
 				rec.setFill(agent!=null ? colorMap.get(agent) : Color.WHITE);
 			}
 
-
-			/*for(Pair<Integer, Integer> coord : rectCoord.keySet()) {
-				Rectangle rec = rectCoord.get(coord);
-				if(cR[coord.getKey()][coord.getValue()] != null) {
-					Agent agent = pz.getAgent(coord.getKey(), coord.getValue());
-					rec.setFill(colorMap.get(agent));
-				}else{
-					rec.setFill(Color.WHITE);
-				}
-				gP.add(rec, coord.getKey(), coord.getValue());
-			}*/
 		});
 	}
 
 	@Override
 	public void start(Stage stage) throws Exception {
 		gP = new GridPane();
-
+		this.stage = stage;
 		//Colors
 		Color tileColor;
 		int colCount = 0;
 
 		//Useful variables
 		Agent[][] cR = pz.getCurrentGrid();
-		int nbAgent = pz.getNbAgent();
 		int sizeX = pz.getSizeX();
 		int sizeY = pz.getSizeY();
 
-		int tileSizeX = 1024/sizeX;
-		int tileSizeY = 1024/sizeY;
+		int tileSizeX = WINSIZEX/sizeX;
+		int tileSizeY = WINSIZEY/sizeY;
 
 		for (int row = 0; row < sizeX; row++) {
 			for (int col = 0; col < sizeY; col++) {
 				Rectangle rec = new Rectangle();
+				Agent agent = pz.getAgent(row, col);
 
 				//Color
-				if(cR[col][row] != null) {
+				if(agent != null) {
 					tileColor = colorsList[colCount];
 					colCount++;
 					if (colCount == 8) {
 						colCount=0;
 					}
-					Agent agent = pz.getAgent(row, col);
+
 					colorMap.put(agent, tileColor);
 				} else tileColor = Color.WHITE;
 
@@ -107,14 +128,20 @@ public class HelloApplication extends Application implements Observer {
 				rec.setHeight(tileSizeX);
 				rec.setFill(tileColor);
 
-
-				//GridPane.setRowIndex(rec, row);
-				//GridPane.setColumnIndex(rec, col);
 				gP.add(rec, col, row);
 			}
 		}
 
-		sc = new Scene(gP, 1024, 1024, true);
+		//Borders
+		for(Node n : gP.getChildren()) {
+			Rectangle rec = (Rectangle) n;
+			Pair<Integer, Integer> coords = rectCoord.get(rec);
+			Agent agent = pz.getAgentDestination(coords.getKey(), coords.getValue());
+			rec.setStroke(agent!=null ? colorMap.get(agent) : Color.WHITE);
+			rec.setStrokeWidth(10);
+		}
+
+		sc = new Scene(gP, WINSIZEX+50, WINSIZEY+50, true);
 		stage.setScene(sc);
 		stage.setTitle("TAQUIN très TAQUIN");
 

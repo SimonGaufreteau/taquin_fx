@@ -75,25 +75,17 @@ public class Puzzle extends Observable {
 
 	public Agent getAgent(int x, int y) { return currentGrid[y][x]; }
 
-	public Map<Agent, Pair<Integer, Integer>> getAgentPos() {
-		return agentPos;
-	}
+	public Agent getAgentDestination(int x, int y) { return destinationGrid[y][x]; }
 
-	public int getNbAgent() {
-		return nbAgent;
-	}
+	public Map<Agent, Pair<Integer, Integer>> getAgentPos() { return agentPos; }
 
-	public int getSizeX() {
-		return sizeX;
-	}
+	public int getNbAgent() { return nbAgent; }
 
-	public int getSizeY() {
-		return sizeY;
-	}
+	public int getSizeX() { return sizeX; }
 
-	public Map<Agent, Pair<Integer, Integer>> getAgentDestination() {
-		return agentDestination;
-	}
+	public int getSizeY() { return sizeY; }
+
+	public Map<Agent, Pair<Integer, Integer>> getAgentDestination() { return agentDestination; }
 
 	@Override
 	public String toString() {
