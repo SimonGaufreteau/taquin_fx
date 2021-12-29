@@ -71,6 +71,7 @@ public class HelloApplication extends Application implements Observer {
 			//Close app 5 seconds after puzzle completion
 			if(pz.isFinished()) {
 				try {
+					System.out.printf("Taquin solved in %d moves\n",pz.getMaxMoveCount());
 					PauseTransition delay = new PauseTransition(Duration.seconds(5));
 					delay.setOnFinished( event -> stage.close() );
 					delay.play();

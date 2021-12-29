@@ -19,6 +19,7 @@ public class Puzzle extends Observable {
 	private Map<Agent, Pair<Integer,Integer>> agentDestination;
 	private int nbAgent;
 	private int sizeX,sizeY;
+	private Map<Agent,Integer> moveCountAgent;
 
 	public Puzzle(int nbAgent,int sizeX,int sizeY) {
 		this.nbAgent = nbAgent;
@@ -26,6 +27,7 @@ public class Puzzle extends Observable {
 		this.sizeY=sizeY;
 		this.agentPos = new HashMap<>();
 		this.agentDestination = new HashMap<>();
+		this.moveCountAgent = new HashMap<>();
 		agentList = generateAgents();
 		currentGrid = generateRandomGrid(this.agentPos);
 		destinationGrid = generateRandomGrid(this.agentDestination);
@@ -40,7 +42,9 @@ public class Puzzle extends Observable {
 	private Agent[] generateAgents() {
 		Agent[] tempList = new Agent[nbAgent];
 		for(int i=0;i<nbAgent;i++){
-			tempList[i] = new Agent(i,this);
+			Agent tempAgent = new Agent(i,this);
+			tempList[i] = tempAgent;
+			this.moveCountAgent.put(tempAgent,0);
 		}
 		return tempList;
 	}
@@ -156,9 +160,26 @@ public class Puzzle extends Observable {
 		this.currentGrid[newY][newX] = agent;
 		Pair<Integer,Integer> newCoords = new Pair<>(newX,newY);
 		this.agentPos.put(agent,newCoords);
-		System.out.println(this);
+		//System.out.println(this);
+
+		this.moveCountAgent.put(agent,this.moveCountAgent.get(agent)+1);
+
 		setChanged();
 		notifyObservers();
 		return true;
+	}
+
+	/**
+	 * @return The total number of steps made by all agents (sum)
+	 */
+	public int getMoveCount(){
+		return this.moveCountAgent.values().stream().mapToInt(Integer::intValue).sum();
+	}
+
+	/**
+	 * @return The maximum number of steps any agent has made during the resolution.
+	 */
+	public int getMaxMoveCount(){
+		return this.moveCountAgent.values().stream().max(Integer::compare).orElse(-1);
 	}
 }

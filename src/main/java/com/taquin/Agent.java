@@ -12,6 +12,7 @@ public class Agent extends Thread {
 
 	private final int ID;
 	private Puzzle puzzle;
+	private final static int SLEEP_TIME = 500;
 
 	public Agent(int i, Puzzle puzzle) {
 		super();
@@ -34,7 +35,7 @@ public class Agent extends Thread {
 				break;
 			}
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(SLEEP_TIME);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
