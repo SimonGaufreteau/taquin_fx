@@ -15,11 +15,16 @@ public class Puzzle extends Observable {
 	private Agent[] agentList;
 	private Agent[][] destinationGrid;
 	private Agent[][] currentGrid;
-	private Map<Agent, Pair<Integer,Integer>> agentPos;
+	private HashMap<Agent, Pair<Integer,Integer>> agentPos;
 	private Map<Agent, Pair<Integer,Integer>> agentDestination;
 	private int nbAgent;
 	private int sizeX,sizeY;
 	private Map<Agent,Integer> moveCountAgent;
+
+	// Cache variables to enable repeatability
+	private final HashMap<Agent, Pair<Integer,Integer>> baseAgentPos;
+
+
 
 	public Puzzle(int nbAgent,int sizeX,int sizeY) {
 		this.nbAgent = nbAgent;
@@ -29,7 +34,10 @@ public class Puzzle extends Observable {
 		this.agentDestination = new HashMap<>();
 		this.moveCountAgent = new HashMap<>();
 		agentList = generateAgents();
+
 		currentGrid = generateRandomGrid(this.agentPos);
+		baseAgentPos = (HashMap<Agent, Pair<Integer, Integer>>) agentPos.clone();
+
 		destinationGrid = generateRandomGrid(this.agentDestination);
 	}
 
@@ -38,6 +46,42 @@ public class Puzzle extends Observable {
 			agent.start();
 		}
 	}
+
+	/**
+	 * Resets everything necessary to replay the exact same grid (grid positions, count, ...)
+	 */
+	public void reset(){
+		this.agentPos = (HashMap<Agent, Pair<Integer, Integer>>) baseAgentPos.clone();
+		this.currentGrid = new Agent[sizeY][sizeX];
+		this.moveCountAgent = new HashMap<>();
+		for (int i = 0; i < agentList.length; i++) {
+			Agent oldAgent = agentList[i];
+			Agent newAgent = Agent.getNewCopy(oldAgent);
+			agentList[i] = newAgent;
+
+			// Update grid references
+			Pair<Integer, Integer> oldPosition = agentPos.get(oldAgent);
+			int x = oldPosition.getKey();
+			int y = oldPosition.getValue();
+			this.currentGrid[y][x] = newAgent;
+
+			// Update current position references
+			agentPos.remove(oldAgent);
+			agentPos.put(newAgent,oldPosition);
+
+			// Update destination position references
+			agentDestination.put(newAgent,agentDestination.get(oldAgent));
+			agentDestination.remove(oldAgent);
+
+			// Update base position references
+			baseAgentPos.remove(oldAgent);
+			baseAgentPos.put(newAgent,oldPosition);
+
+			// Reset move count
+			moveCountAgent.put(newAgent,0);
+		}
+	}
+
 
 	private Agent[] generateAgents() {
 		Agent[] tempList = new Agent[nbAgent];

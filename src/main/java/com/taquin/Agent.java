@@ -20,6 +20,10 @@ public class Agent extends Thread {
 		this.puzzle = puzzle;
 	}
 
+	public static Agent getNewCopy(Agent agent) {
+		return new Agent(agent.ID,agent.puzzle);
+	}
+
 	@Override
 	public void run() {
 		while(!puzzle.isFinished()) {
