@@ -73,7 +73,12 @@ public class HelloApplication extends Application implements Observer {
 				try {
 					System.out.printf("Taquin solved in %d moves\n",pz.getMaxMoveCount());
 					PauseTransition delay = new PauseTransition(Duration.seconds(5));
-					delay.setOnFinished( event -> stage.close() );
+					delay.setOnFinished( event ->{
+						pz.reset();
+						updateColorMap();
+						pz.runResolution();
+
+					}  );
 					delay.play();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -88,6 +93,22 @@ public class HelloApplication extends Application implements Observer {
 			}
 
 		});
+	}
+
+	/**
+	 * Updates the color map with every agent. The colors stay the same after a puzzle reset only if the reset is done
+	 * in the same order.
+	 */
+	private void updateColorMap() {
+		int colCount = 0;
+		Agent[] agentList = pz.getAgentList();
+		for (Agent agent : agentList) {
+			Color tileColor = colorsList[colCount];
+			colCount++;
+			colCount = colCount >= colorsList.length ? 0 : colCount;
+
+			colorMap.put(agent, tileColor);
+		}
 	}
 
 	@Override
@@ -108,6 +129,8 @@ public class HelloApplication extends Application implements Observer {
 
 		int stroke_width = (WINSIZEX/sizeX)-tileSizeX;
 
+		updateColorMap();
+
 		for (int row = 0; row < sizeX; row++) {
 			for (int col = 0; col < sizeY; col++) {
 				Rectangle rec = new Rectangle();
@@ -115,14 +138,7 @@ public class HelloApplication extends Application implements Observer {
 
 				//Color
 				if(agent != null) {
-					tileColor = colorsList[colCount];
-					colCount++;
-					/*
-					if (colCount == 8) {
-						colCount=0;
-					}*/
-
-					colorMap.put(agent, tileColor);
+					tileColor = colorMap.get(agent);
 				} else tileColor = Color.WHITE;
 
 				Pair<Integer,Integer> pair = new Pair<>(col, row);
