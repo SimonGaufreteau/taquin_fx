@@ -28,13 +28,17 @@ public class Agent extends Thread {
 	public void run() {
 		while(!puzzle.isFinished()) {
 			// Check if the Agent is on the right position
-			Pair<Integer, Integer> destination = puzzle.getAgentDestination().get(this);
-			Pair<Integer, Integer> currentPos = puzzle.getAgentPos().get(this);
-			if(!(destination.getKey().equals(currentPos.getKey())) || !(destination.getValue().equals(currentPos.getValue()))){
+
+			// First check to move if not at the end
+			if(!isAtDestination()){
 				// If not, try to move in the best direction
 				move();
 			}
-			else {
+
+			// Second check to stop if at the right pos
+			// (if we don't do this and just an "else" the puzzle sometimes finishes during the thread sleep and
+			// we don't get to see if the agent really finished)
+			if(isAtDestination()){
 				System.out.println("Agent "+ID+" has arrived");
 				break;
 			}
@@ -45,7 +49,12 @@ public class Agent extends Thread {
 			}
 		}
 		//System.out.println(puzzle);
-		//System.out.println("Puzzle finished");
+	}
+
+	private boolean isAtDestination() {
+		Pair<Integer, Integer> destination = puzzle.getAgentDestination().get(this);
+		Pair<Integer, Integer> currentPos = puzzle.getAgentPos().get(this);
+		return destination.getKey().equals(currentPos.getKey()) && destination.getValue().equals(currentPos.getValue());
 	}
 
 
