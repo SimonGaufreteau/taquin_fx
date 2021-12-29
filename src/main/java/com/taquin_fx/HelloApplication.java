@@ -22,6 +22,7 @@ public class HelloApplication extends Application implements Observer {
 	private final Puzzle pz;
 	private final int WINSIZEX = 800;
 	private final int WINSIZEY = 800;
+	private final double TILE_RATIO = 4./5.;
 	private HashMap<Agent, Color> colorMap;
 	private HashMap<Rectangle, Pair<Integer, Integer>> rectCoord;
 	private GridPane gP;
@@ -101,8 +102,10 @@ public class HelloApplication extends Application implements Observer {
 		int sizeX = pz.getSizeX();
 		int sizeY = pz.getSizeY();
 
-		int tileSizeX = WINSIZEX/sizeX;
-		int tileSizeY = WINSIZEY/sizeY;
+		int tileSizeX = (int) ((WINSIZEX/sizeX)*TILE_RATIO);
+		int tileSizeY = (int) ((WINSIZEY/sizeY)*TILE_RATIO);
+
+		int stroke_width = (WINSIZEX/sizeX)-tileSizeX;
 
 		for (int row = 0; row < sizeX; row++) {
 			for (int col = 0; col < sizeY; col++) {
@@ -113,14 +116,15 @@ public class HelloApplication extends Application implements Observer {
 				if(agent != null) {
 					tileColor = colorsList[colCount];
 					colCount++;
+					/*
 					if (colCount == 8) {
 						colCount=0;
-					}
+					}*/
 
 					colorMap.put(agent, tileColor);
 				} else tileColor = Color.WHITE;
 
-				Pair pair = new Pair(col, row);
+				Pair<Integer,Integer> pair = new Pair<>(col, row);
 				rectCoord.put(rec, pair);
 
 				//Size && fill
@@ -138,10 +142,10 @@ public class HelloApplication extends Application implements Observer {
 			Pair<Integer, Integer> coords = rectCoord.get(rec);
 			Agent agent = pz.getAgentDestination(coords.getKey(), coords.getValue());
 			rec.setStroke(agent!=null ? colorMap.get(agent) : Color.WHITE);
-			rec.setStrokeWidth(10);
+			rec.setStrokeWidth(stroke_width);
 		}
 
-		sc = new Scene(gP, WINSIZEX+50, WINSIZEY+50, true);
+		sc = new Scene(gP, WINSIZEX, WINSIZEY, true);
 		stage.setScene(sc);
 		stage.setTitle("TAQUIN très TAQUIN");
 
