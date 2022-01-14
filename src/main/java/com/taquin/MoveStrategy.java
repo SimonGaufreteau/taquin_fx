@@ -9,6 +9,6 @@ public abstract class MoveStrategy {
         this.puzzle = puzzle;
     }
 
-    abstract void move();
+    abstract boolean move();
 
 }

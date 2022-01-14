@@ -74,10 +74,13 @@ public class Agent extends Thread {
 	}
 
 	/**
-	 * @return An array of size 2 => The best directions to take on X and Y (ex: [TOP, LEFT] )
+	 * @param n size of the return array. Valid values : 1 and 2
+	 * @return An array of size n => The best directions to take on X and Y (ex: [TOP, LEFT] )
 	 */
-	protected Direction[] getBestDirections() {
-		Direction[] directions = new Direction[2];
+	protected Direction[] getBestDirections(int n) throws Exception {
+		if(n!=2 && n!=1)
+			throw new Exception("Wrong size of direction list. Valid values are 1 and 2.");
+		Direction[] directions = new Direction[n];
 
 		int distX = getDistance(Axes.X);
 		int distY = getDistance(Axes.Y);

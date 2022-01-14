@@ -123,6 +123,9 @@ public class Puzzle extends Observable {
 
 	public Agent getAgent(int x, int y) { return currentGrid[y][x]; }
 
+	public Agent getAgent(Pair<Integer,Integer> position) {return getAgent(position.getKey(),position.getValue());}
+
+
 	public Agent getAgentDestination(int x, int y) { return destinationGrid[y][x]; }
 
 	public Map<Agent, Pair<Integer, Integer>> getAgentPos() { return agentPos; }
@@ -192,19 +195,14 @@ public class Puzzle extends Observable {
 		Pair<Integer, Integer> coords = this.agentPos.get(agent);
 		int x = coords.getKey();
 		int y = coords.getValue();
-		int newX = x;
-		int newY = y;
-		switch (dir){
-			case TOP -> newY = y-1;
-			case RIGHT -> newX = x+1;
-			case BOTTOM -> newY = y+1;
-			case LEFT -> newX = x-1;
-		}
+
+		Pair<Integer,Integer> newCoords = getPositionFromDirection(coords,dir);
+		int newX = newCoords.getKey();
+		int newY = newCoords.getValue();
+
 		this.currentGrid[y][x] = null;
 		this.currentGrid[newY][newX] = agent;
-		Pair<Integer,Integer> newCoords = new Pair<>(newX,newY);
 		this.agentPos.put(agent,newCoords);
-		//System.out.println(this);
 
 		this.moveCountAgent.put(agent,this.moveCountAgent.get(agent)+1);
 
@@ -225,5 +223,49 @@ public class Puzzle extends Observable {
 	 */
 	public int getMaxMoveCount(){
 		return this.moveCountAgent.values().stream().max(Integer::compare).orElse(-1);
+	}
+
+	public boolean isValidPosition(int x, int y){
+		return x >= 0 && y >=0 && x < currentGrid[0].length && y < currentGrid.length;
+	}
+
+	public boolean isValidDirection(int x,int y,Direction direction){
+		return switch (direction) {
+			case TOP -> y - 1 >= 0;
+			case RIGHT -> x + 1 < currentGrid[0].length;
+			case BOTTOM -> y + 1 < currentGrid.length;
+			case LEFT -> x - 1 >= 0;
+		};
+	}
+
+	public boolean isValidDirection(Pair<Integer,Integer>position, Direction direction){
+		return isValidDirection(position.getKey(),position.getValue(),direction);
+	}
+
+	public Pair<Integer,Integer> getPositionFromDirection(Pair<Integer,Integer> basePosition,Direction direction){
+		int x = basePosition.getKey();
+		int y = basePosition.getValue();
+		switch (direction) {
+			case TOP -> y--;
+			case RIGHT -> x++;
+			case BOTTOM -> y++;
+			case LEFT -> x--;
+		}
+		return new Pair<>(x, y);
+	}
+
+
+	/**
+	 * @return The agent in the given direction from the current agent position
+	 * @throws Exception if the position in the direction is out of the grid
+	 */
+	public Agent getAgentInDirection(Agent agent, Direction direction) throws Exception {
+		Pair<Integer,Integer> currentPos = this.getAgentPos().get(agent);
+		Exception invalidPos = new Exception("Required direction is invalid");
+		if(!isValidDirection(currentPos,direction))
+			throw invalidPos;
+
+		Pair<Integer,Integer> nextPos = getPositionFromDirection(currentPos,direction);
+		return getAgent(nextPos);
 	}
 }
