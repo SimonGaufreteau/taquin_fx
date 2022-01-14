@@ -21,25 +21,36 @@ public class Puzzle extends Observable {
 	private int sizeX,sizeY;
 	private Map<Agent,Integer> moveCountAgent;
 
+	private MailBox mailBox;
+
 	// Cache variables to enable repeatability
 	private final HashMap<Agent, Pair<Integer,Integer>> baseAgentPos;
 
 
 
 	public Puzzle(int nbAgent,int sizeX,int sizeY) {
+		this(nbAgent,sizeX,sizeY,"");
+	}
+
+	public Puzzle(int nbAgent,int sizeX,int sizeY,String strategyName) {
 		this.nbAgent = nbAgent;
 		this.sizeX = sizeX;
 		this.sizeY=sizeY;
 		this.agentPos = new HashMap<>();
 		this.agentDestination = new HashMap<>();
 		this.moveCountAgent = new HashMap<>();
-		agentList = generateAgents();
+
+		agentList = generateAgents(strategyName);
 
 		currentGrid = generateRandomGrid(this.agentPos);
 		baseAgentPos = (HashMap<Agent, Pair<Integer, Integer>>) agentPos.clone();
 
 		destinationGrid = generateRandomGrid(this.agentDestination);
+
+		mailBox = new MailBox(agentList);
+
 	}
+
 
 	public void runResolution(){
 		for(Agent agent : agentList){
@@ -84,9 +95,26 @@ public class Puzzle extends Observable {
 
 
 	private Agent[] generateAgents() {
+		return generateAgents("");
+	}
+
+	/**
+	 * Generates the agent with the given strategy name. If an empty String is given, the default Agent constructor
+	 * will be used.
+	 * @return the agent list generated
+	 * @see Agent
+	 */
+	private Agent[] generateAgents(String strategyName) {
+		System.out.println("Generating agents with the following strategy : "+
+				(strategyName.equals("")?"Default":strategyName));
+
 		Agent[] tempList = new Agent[nbAgent];
 		for(int i=0;i<nbAgent;i++){
-			Agent tempAgent = new Agent(i,this);
+			Agent tempAgent;
+			if(strategyName.equals(""))
+				tempAgent = new Agent(i,this);
+			else
+				tempAgent = new Agent(i,this, strategyName);
 			tempList[i] = tempAgent;
 			this.moveCountAgent.put(tempAgent,0);
 		}
@@ -135,6 +163,10 @@ public class Puzzle extends Observable {
 	public int getSizeX() { return sizeX; }
 
 	public int getSizeY() { return sizeY; }
+
+	public MailBox getMailBox() {
+		return this.mailBox;
+	}
 
 	public Map<Agent, Pair<Integer, Integer>> getAgentDestination() { return agentDestination; }
 
@@ -268,4 +300,6 @@ public class Puzzle extends Observable {
 		Pair<Integer,Integer> nextPos = getPositionFromDirection(currentPos,direction);
 		return getAgent(nextPos);
 	}
+
+
 }

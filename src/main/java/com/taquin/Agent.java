@@ -2,10 +2,7 @@ package com.taquin;
 
 import javafx.util.Pair;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Observable;
+import java.util.Locale;
 import java.util.Random;
 
 public class Agent extends Thread {
@@ -15,15 +12,14 @@ public class Agent extends Thread {
 	private MoveStrategy strategy;
 
 	public Agent(int i, Puzzle puzzle) {
-		this(i,puzzle,null);
-		this.setStrategy(new BasicMoveStrategy(this,puzzle));
+		this(i,puzzle,"basicmovestrategy");
 	}
 
-	public Agent(int i, Puzzle puzzle, MoveStrategy strategy){
+	public Agent(int i, Puzzle puzzle, String strategyName){
 		super();
 		this.ID = i;
 		this.puzzle = puzzle;
-		this.strategy = strategy;
+		this.setStrategy(strategyName);
 	}
 
 
@@ -76,6 +72,7 @@ public class Agent extends Thread {
 	/**
 	 * @param n size of the return array. Valid values : 1 and 2
 	 * @return An array of size n => The best directions to take on X and Y (ex: [TOP, LEFT] )
+	 * @throws Exception if 1 <= n <= 2 is not verified
 	 */
 	protected Direction[] getBestDirections(int n) throws Exception {
 		if(n!=2 && n!=1)
@@ -87,21 +84,25 @@ public class Agent extends Thread {
 
 		if(Math.abs(distX)>Math.abs(distY)){
 			directions[0] = distX>0?Direction.RIGHT:Direction.LEFT;
-			if(distY==0){
-				Random random = new Random();
-				directions[1] = random.nextInt(2)==1?Direction.TOP:Direction.BOTTOM;
+			if(n>1){
+				if(distY==0){
+					Random random = new Random();
+					directions[1] = random.nextInt(2)==1?Direction.TOP:Direction.BOTTOM;
+				}
+				else
+					directions[1] = distY>0?Direction.BOTTOM:Direction.TOP;
 			}
-			else
-				directions[1] = distY>0?Direction.BOTTOM:Direction.TOP;
+
 		}
 		else {
 			directions[0] = distY>0?Direction.BOTTOM:Direction.TOP;
-			if(distX==0){
-				Random random = new Random();
-				directions[1] = random.nextInt(2)==1?Direction.RIGHT:Direction.LEFT;
+			if(n>1) {
+				if (distX == 0) {
+					Random random = new Random();
+					directions[1] = random.nextInt(2) == 1 ? Direction.RIGHT : Direction.LEFT;
+				} else
+					directions[1] = distX > 0 ? Direction.RIGHT : Direction.LEFT;
 			}
-			else
-				directions[1] = distX>0?Direction.RIGHT:Direction.LEFT;
 		}
 
 		return directions;
@@ -116,8 +117,15 @@ public class Agent extends Thread {
 		return destinationPos.getValue()-currentPos.getValue();
 	}
 
-	public void setStrategy(MoveStrategy strategy) {
-		this.strategy = strategy;
+	/**
+	 * Sets the strategy according to the given String. Defaults to {@link BasicMoveStrategy}.
+	 * @see MoveStrategy
+	 */
+	public void setStrategy(String strategyName) {
+		this.strategy = switch (strategyName.toLowerCase(Locale.ROOT)){
+			case "messagestrategy" -> new MessageStrategy(this,puzzle);
+			default -> new BasicMoveStrategy(this,puzzle);
+		};
 	}
 
 	@Override
