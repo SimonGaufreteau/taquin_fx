@@ -29,24 +29,29 @@ public class Agent extends Thread {
 
 	@Override
 	public void run() {
+		try {
+			Thread.sleep((long) SLEEP_TIME *ID);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		while(!puzzle.isFinished()) {
 			// Check if the Agent is on the right position
 
-			// First check to move if not at the end
-			if(!isAtDestination()){
-				// If not, try to move in the best direction
+			// First check to move if not at the end or the strategy uses a mixed priority policy
+			// (which may take priority even if the agent is at its final position)
+			if(!isAtDestination() || strategy.hasMixedPriority()){
 				move();
 			}
 
 			// Second check to stop if at the right pos
 			// (if we don't do this and just an "else" the puzzle sometimes finishes during the thread sleep and
 			// we don't get to see if the agent really finished)
-			if(isAtDestination()){
+			if(isAtDestination() && !strategy.hasMixedPriority()){
 				System.out.println("Agent "+ID+" has arrived");
 				break;
 			}
 			try {
-				Thread.sleep(SLEEP_TIME);
+				Thread.sleep((long) SLEEP_TIME *puzzle.getNbAgent());
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -54,7 +59,7 @@ public class Agent extends Thread {
 		//System.out.println(puzzle);
 	}
 
-	private boolean isAtDestination() {
+	public boolean isAtDestination() {
 		Pair<Integer, Integer> destination = puzzle.getAgentDestination().get(this);
 		Pair<Integer, Integer> currentPos = puzzle.getAgentPos().get(this);
 		return destination.getKey().equals(currentPos.getKey()) && destination.getValue().equals(currentPos.getValue());

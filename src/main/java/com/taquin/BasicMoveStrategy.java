@@ -23,10 +23,6 @@ public class BasicMoveStrategy extends MoveStrategy{
             e.printStackTrace();
         }
 
-        Pair<Integer,Integer> currentPos = puzzle.getAgentPos().get(agent);
-        Agent[][] currentGrid = puzzle.getCurrentGrid();
-        int x = currentPos.getKey();
-        int y = currentPos.getValue();
         boolean moved = false;
 
         for (int i = 0; i < directions.length && !moved; i++) {

@@ -6,11 +6,13 @@ public class Message {
     private MessageType messageType;
     private Agent sender;
     private Agent recipient;
+    private Direction direction;
 
-    public Message(MessageType messageType, Agent sender, Agent recipient) {
+    public Message(MessageType messageType, Agent sender, Agent recipient, Direction direction) {
         this.messageType = messageType;
         this.sender = sender;
         this.recipient = recipient;
+        this.direction = direction;
     }
 
     public MessageType getMessageType() {
@@ -23,6 +25,10 @@ public class Message {
 
     public Agent getRecipient() {
         return recipient;
+    }
+
+    public Direction getDirection() {
+        return direction;
     }
 
     @Override
@@ -46,6 +52,7 @@ public class Message {
                 "messageType=" + messageType +
                 ", sender=" + sender +
                 ", recipient=" + recipient +
+                ", direction=" + direction +
                 '}';
     }
 }
