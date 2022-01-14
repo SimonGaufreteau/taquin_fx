@@ -9,16 +9,23 @@ import java.util.Observable;
 import java.util.Random;
 
 public class Agent extends Thread {
-
 	private final int ID;
 	private Puzzle puzzle;
 	private final static int SLEEP_TIME = 500;
+	private MoveStrategy strategy;
 
 	public Agent(int i, Puzzle puzzle) {
+		this(i,puzzle,null);
+		this.setStrategy(new BasicMoveStrategy(this,puzzle));
+	}
+
+	public Agent(int i, Puzzle puzzle, MoveStrategy strategy){
 		super();
 		this.ID = i;
 		this.puzzle = puzzle;
+		this.strategy = strategy;
 	}
+
 
 	public static Agent getNewCopy(Agent agent) {
 		return new Agent(agent.ID,agent.puzzle);
@@ -63,56 +70,13 @@ public class Agent extends Thread {
 	}
 
 	public void move() {
-		Direction[] directions = getBestDirections();
-		Pair<Integer,Integer> currentPos = puzzle.getAgentPos().get(this);
-		Agent[][] currentGrid = puzzle.getCurrentGrid();
-		int x = currentPos.getKey();
-		int y = currentPos.getValue();
-		boolean moved;
-
-		moved = switch(directions[0]) {
-			case TOP -> y - 1 >= 0 && currentGrid[y - 1][x] == null && puzzle.moveAgent(this, Direction.TOP);
-
-			case RIGHT -> x + 1 < currentGrid[0].length && currentGrid[y][x + 1] == null && puzzle.moveAgent(this, Direction.RIGHT);
-
-			case BOTTOM -> y + 1 < currentGrid.length && currentGrid[y + 1][x] == null && puzzle.moveAgent(this, Direction.BOTTOM);
-
-			case LEFT -> x - 1 >= 0 && currentGrid[y][x - 1] == null && puzzle.moveAgent(this, Direction.LEFT);
-		};
-
-		if(!moved){
-			switch(directions[1]) {
-				case TOP -> {
-					if (y - 1 >= 0 && currentGrid[y - 1][x] == null) {
-						puzzle.moveAgent(this, Direction.TOP);
-					}
-				}
-
-				case RIGHT -> {
-					if (x + 1 < currentGrid[0].length && currentGrid[y][x + 1] == null) {
-						puzzle.moveAgent(this, Direction.RIGHT);
-					}
-				}
-
-				case BOTTOM -> {
-					if (y + 1 < currentGrid.length && currentGrid[y + 1][x] == null) {
-						puzzle.moveAgent(this, Direction.BOTTOM);
-					}
-				}
-
-				case LEFT -> {
-					if (x - 1 >= 0 && currentGrid[y][x - 1] == null) {
-						puzzle.moveAgent(this, Direction.LEFT);
-					}
-				}
-			}
-		}
+		this.strategy.move();
 	}
 
 	/**
 	 * @return An array of size 2 => The best directions to take on X and Y (ex: [TOP, LEFT] )
 	 */
-	private Direction[] getBestDirections() {
+	protected Direction[] getBestDirections() {
 		Direction[] directions = new Direction[2];
 
 		int distX = getDistance(Axes.X);
@@ -147,7 +111,10 @@ public class Agent extends Thread {
 			return destinationPos.getKey()-currentPos.getKey();
 		}
 		return destinationPos.getValue()-currentPos.getValue();
+	}
 
+	public void setStrategy(MoveStrategy strategy) {
+		this.strategy = strategy;
 	}
 
 	@Override
