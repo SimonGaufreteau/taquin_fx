@@ -8,10 +8,9 @@ import java.util.Random;
 public class Agent extends Thread {
 	private final int ID;
 	private Puzzle puzzle;
-	private final static int SLEEP_TIME = 500;
+	private final static int SLEEP_TIME = 250;
 	private final static boolean IS_SEQUENTIAL = false;
 	private MoveStrategy strategy;
-	private Random random;
 	private long wait_time;
 
 	private String name;
@@ -25,8 +24,7 @@ public class Agent extends Thread {
 		this.ID = i;
 		this.puzzle = puzzle;
 		this.setStrategy(strategyName);
-		this.random = new Random();
-		this.wait_time = random.nextInt(puzzle.getNbAgent()*100);
+		this.wait_time = puzzle.getRandom().nextInt(puzzle.getNbAgent()*100);
 		this.name = "old";
 	}
 
@@ -68,7 +66,6 @@ public class Agent extends Thread {
 			// (if we don't do this and just an "else" the puzzle sometimes finishes during the thread sleep and
 			// we don't get to see if the agent really finished)
 			if(isAtDestination() && !strategy.hasMixedPriority()){
-				System.out.println("Agent "+ID+" has arrived");
 				break;
 			}
 			try {
@@ -93,7 +90,8 @@ public class Agent extends Thread {
 	}
 
 	public void move() {
-		this.strategy.move();
+		Direction direction = this.strategy.move();
+		this.strategy.addToBuffer(direction);
 	}
 
 	/**
@@ -113,8 +111,7 @@ public class Agent extends Thread {
 			directions[0] = distX>0?Direction.RIGHT:Direction.LEFT;
 			if(n>1){
 				if(distY==0){
-					Random random = new Random();
-					directions[1] = random.nextInt(2)==1?Direction.TOP:Direction.BOTTOM;
+					directions[1] = puzzle.getRandom().nextInt(2)==1?Direction.TOP:Direction.BOTTOM;
 				}
 				else
 					directions[1] = distY>0?Direction.BOTTOM:Direction.TOP;
@@ -125,8 +122,7 @@ public class Agent extends Thread {
 			directions[0] = distY>0?Direction.BOTTOM:Direction.TOP;
 			if(n>1) {
 				if (distX == 0) {
-					Random random = new Random();
-					directions[1] = random.nextInt(2) == 1 ? Direction.RIGHT : Direction.LEFT;
+					directions[1] = puzzle.getRandom().nextInt(2) == 1 ? Direction.RIGHT : Direction.LEFT;
 				} else
 					directions[1] = distX > 0 ? Direction.RIGHT : Direction.LEFT;
 			}

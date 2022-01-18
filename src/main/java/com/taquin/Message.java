@@ -7,15 +7,21 @@ public class Message {
     private Agent sender;
     private Agent recipient;
     private Direction direction;
+    private int stepsToWait;
 
-    public Message(MessageType messageType, Agent sender, Agent recipient, Direction direction) {
+    public Message(MessageType messageType, Agent sender, Agent recipient, Direction direction,int stepsToWait) {
         this.messageType = messageType;
         this.sender = sender;
         this.recipient = recipient;
         this.direction = direction;
+        this.stepsToWait = stepsToWait;
+    }
+    public Message(MessageType messageType, Agent sender, Agent recipient, Direction direction) {
+        this(messageType,sender,recipient,direction,0);
     }
 
-    public MessageType getMessageType() {
+
+        public MessageType getMessageType() {
         return messageType;
     }
 
@@ -29,6 +35,10 @@ public class Message {
 
     public Direction getDirection() {
         return direction;
+    }
+
+    public int getStepsToWait() {
+        return stepsToWait;
     }
 
     @Override
