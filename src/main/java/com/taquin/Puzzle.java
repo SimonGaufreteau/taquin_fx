@@ -68,6 +68,7 @@ public class Puzzle extends Observable {
 		for (int i = 0; i < agentList.length; i++) {
 			Agent oldAgent = agentList[i];
 			Agent newAgent = Agent.getNewCopy(oldAgent);
+			newAgent.setAgentName("new");
 			agentList[i] = newAgent;
 
 			// Update grid references
@@ -91,6 +92,7 @@ public class Puzzle extends Observable {
 			// Reset move count
 			moveCountAgent.put(newAgent,0);
 		}
+		mailBox.resetBox(agentList);
 	}
 
 
@@ -231,7 +233,11 @@ public class Puzzle extends Observable {
 		Pair<Integer,Integer> newCoords = getPositionFromDirection(coords,dir);
 		int newX = newCoords.getKey();
 		int newY = newCoords.getValue();
-
+		Agent agentAtNewPos = getAgent(newCoords);
+		if(agentAtNewPos!=null){
+			System.out.println("Agent " + agent + " tried to move  at "+agentAtNewPos +" place, aborting.");
+			return false;
+		}
 		this.currentGrid[y][x] = null;
 		this.currentGrid[newY][newX] = agent;
 		this.agentPos.put(agent,newCoords);
@@ -293,7 +299,7 @@ public class Puzzle extends Observable {
 	 */
 	public Agent getAgentInDirection(Agent agent, Direction direction) throws Exception {
 		Pair<Integer,Integer> currentPos = this.getAgentPos().get(agent);
-		Exception invalidPos = new Exception("Required direction is invalid");
+		Exception invalidPos = new Exception("Required direction is invalid. Pos : "+currentPos +" / Direction :" +direction);
 		if(!isValidDirection(currentPos,direction))
 			throw invalidPos;
 

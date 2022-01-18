@@ -4,6 +4,7 @@ public abstract class MoveStrategy {
     protected Agent agent;
     protected Puzzle puzzle;
     protected boolean mixedPriority = false;
+    protected String name = "movestrategy";
 
     public MoveStrategy(Agent agent, Puzzle puzzle){
         this.agent = agent;
@@ -17,5 +18,9 @@ public abstract class MoveStrategy {
      */
     public boolean hasMixedPriority() {
         return mixedPriority;
+    }
+
+    public String getName() {
+        return name;
     }
 }

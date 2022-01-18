@@ -4,6 +4,7 @@ import javafx.util.Pair;
 
 public class BasicMoveStrategy extends MoveStrategy{
     private int sizeDirection;
+    private final String name = "basicmovestrategy";
 
     public BasicMoveStrategy(Agent agent, Puzzle puzzle, int sizeDirection) {
         super(agent, puzzle);

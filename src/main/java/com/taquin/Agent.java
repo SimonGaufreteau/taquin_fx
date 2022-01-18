@@ -9,7 +9,12 @@ public class Agent extends Thread {
 	private final int ID;
 	private Puzzle puzzle;
 	private final static int SLEEP_TIME = 500;
+	private final static boolean IS_SEQUENTIAL = false;
 	private MoveStrategy strategy;
+	private Random random;
+	private long wait_time;
+
+	private String name;
 
 	public Agent(int i, Puzzle puzzle) {
 		this(i,puzzle,"basicmovestrategy");
@@ -20,17 +25,33 @@ public class Agent extends Thread {
 		this.ID = i;
 		this.puzzle = puzzle;
 		this.setStrategy(strategyName);
+		this.random = new Random();
+		this.wait_time = random.nextInt(puzzle.getNbAgent()*100);
+		this.name = "old";
+	}
+
+	public Agent(int id, Puzzle puzzle, MoveStrategy strategy) {
+		this(id,puzzle);
+		this.strategy=strategy;
+	}
+
+	public void setAgentName(String name){
+		this.name = name;
 	}
 
 
 	public static Agent getNewCopy(Agent agent) {
-		return new Agent(agent.ID,agent.puzzle);
+		return new Agent(agent.ID,agent.puzzle,agent.strategy.getName());
 	}
 
 	@Override
 	public void run() {
+		System.out.println("Agent "+this+ " started");
 		try {
-			Thread.sleep((long) SLEEP_TIME *ID);
+			if(IS_SEQUENTIAL)
+				Thread.sleep((long) SLEEP_TIME *ID);
+			else
+				Thread.sleep(wait_time);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -51,12 +72,13 @@ public class Agent extends Thread {
 				break;
 			}
 			try {
-				Thread.sleep((long) SLEEP_TIME *puzzle.getNbAgent());
+				long sleep_time_adj = IS_SEQUENTIAL? (long) SLEEP_TIME *puzzle.getNbAgent():SLEEP_TIME;
+				Thread.sleep(sleep_time_adj);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		//System.out.println(puzzle);
+		System.out.println("Agent "+this+ " finished");
 	}
 
 	public boolean isAtDestination() {
@@ -135,8 +157,8 @@ public class Agent extends Thread {
 
 	@Override
 	public String toString() {
-		return "Agent{" +
-				"ID=" + ID +
+		return "Agent{" + name +
+				" ID=" + ID +
 				'}';
 	}
 

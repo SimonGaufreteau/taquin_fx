@@ -40,7 +40,7 @@ public class MailBox {
      */
     public void sendMessage(Agent agent, Message message) throws Exception {
         if(box.containsKey(agent)){
-            System.out.println("Sending message : "+message);
+            //System.out.println("Sending message : "+message);
             ConcurrentLinkedQueue<Message> mailQueue = box.get(agent);
             mailQueue.add(message);
             return;

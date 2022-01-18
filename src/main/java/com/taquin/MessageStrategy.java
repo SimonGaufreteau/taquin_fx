@@ -2,6 +2,8 @@ package com.taquin;
 
 public class MessageStrategy extends MoveStrategy{
     private boolean sleepNext;
+    private final String name = "messagestrategy";
+
     public MessageStrategy(Agent agent, Puzzle puzzle) {
         super(agent, puzzle);
         // The agent may move even if it's at his final position due to the mailbox
@@ -27,32 +29,31 @@ public class MessageStrategy extends MoveStrategy{
             return false;
         }
 
+        Direction[] perpendicularDirections;
+        Direction receivedDirection;
         // If we have a message, try move from our position and wait the next step
         if(messageReceived!=null){
-            System.out.printf("Agent %s received %s, trying to process it%n",agent,messageReceived);
-            Direction receivedDirection = messageReceived.getDirection();
+            //System.out.printf("Agent %s received %s, trying to process it%n",agent,messageReceived);
+            receivedDirection = messageReceived.getDirection();
             // First try to move in the perpendicular directions
-            Direction[] perpendicularDirections = DirectionUtils.getPerpendicularDirections(receivedDirection);
+            perpendicularDirections = DirectionUtils.getPerpendicularDirections(receivedDirection);
             for(Direction direction : perpendicularDirections){
                 try {
-                    Agent aDir = puzzle.getAgentInDirection(agent,direction);
-                    if(aDir==null){
+                    if(puzzle.getAgentInDirection(agent,direction)==null){
                         sleepNext = true;
-                        puzzle.moveAgent(agent,receivedDirection);
-                        return true;
+                        return puzzle.moveAgent(agent,direction);
                     }
+                } catch (Exception ignored){
+
                 }
-                catch (Exception ignored) {}
             }
 
             // if we couldn't move before, try to move in the direction given by the sender
             // This may help in situation where the agent can only move "backwards" and make space for the sender
             try{
-                Agent aDir = puzzle.getAgentInDirection(agent,receivedDirection);
-                if(aDir==null) {
+                if(puzzle.getAgentInDirection(agent,receivedDirection)==null){
                     sleepNext = true;
-                    puzzle.moveAgent(agent, receivedDirection);
-                    return true;
+                    return puzzle.moveAgent(agent,receivedDirection);
                 }
             }catch (Exception ignored) {}
         }
