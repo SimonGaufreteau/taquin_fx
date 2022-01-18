@@ -12,6 +12,7 @@ import java.util.*;
  * So to access an element at position (x,y), use : currentGrid[y][x]
  */
 public class Puzzle extends Observable {
+	private final Random random;
 	private Agent[] agentList;
 	private Agent[][] destinationGrid;
 	private Agent[][] currentGrid;
@@ -27,20 +28,25 @@ public class Puzzle extends Observable {
 	private final HashMap<Agent, Pair<Integer,Integer>> baseAgentPos;
 
 
-
-	public Puzzle(int nbAgent,int sizeX,int sizeY) {
-		this(nbAgent,sizeX,sizeY,"");
+	public Puzzle(int nbAgent,int sizeX,int sizeY,int seed) {
+		this(nbAgent,sizeX,sizeY,"",seed);
 	}
 
-	public Puzzle(int nbAgent,int sizeX,int sizeY,String strategyName) {
+	public Puzzle(int nbAgent,int sizeX,int sizeY) {
+		this(nbAgent,sizeX,sizeY,"",0);
+	}
+
+	public Puzzle(int nbAgent,int sizeX,int sizeY,String strategyName,long seed) {
 		this.nbAgent = nbAgent;
 		this.sizeX = sizeX;
 		this.sizeY=sizeY;
 		this.agentPos = new HashMap<>();
 		this.agentDestination = new HashMap<>();
 		this.moveCountAgent = new HashMap<>();
+		this.random = new Random(seed);
 
 		agentList = generateAgents(strategyName);
+
 
 		currentGrid = generateRandomGrid(this.agentPos);
 		baseAgentPos = (HashMap<Agent, Pair<Integer, Integer>>) agentPos.clone();
@@ -125,7 +131,7 @@ public class Puzzle extends Observable {
 
 	public Agent[][] generateRandomGrid(Map<Agent,Pair<Integer,Integer>> posMap){
 		Agent[][] tempGrid = new Agent[sizeY][sizeX];
-		Random random = new Random();
+
 		int agentIndex = 0;
 		while(agentIndex<nbAgent){
 			int tempX = random.nextInt(sizeX);
@@ -308,4 +314,7 @@ public class Puzzle extends Observable {
 	}
 
 
+	public Random getRandom() {
+		return random;
+	}
 }

@@ -12,7 +12,7 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Puzzle pz = new Puzzle(40,10,10,"messageStrategy");
+        Puzzle pz = new Puzzle(40,10,10,"messageStrategy",4);
         Stage st = new Stage();
         HelloApplication happ = new HelloApplication(pz);
 
