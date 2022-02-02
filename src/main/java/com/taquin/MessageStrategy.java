@@ -10,6 +10,7 @@ public class MessageStrategy extends MoveStrategy{
     private final String name = "messagestrategy";
     private final static int MIN_STEPS = 40;
     private int stepsTaken;
+    private int dir_pattern;
 
     public MessageStrategy(Agent agent, Puzzle puzzle) {
         super(agent, puzzle);
@@ -17,6 +18,7 @@ public class MessageStrategy extends MoveStrategy{
         mixedPriority = true;
         stepsToSleep = 0;
         stepsTaken = 0;
+        dir_pattern = 0;
     }
 
     @Override
@@ -37,7 +39,7 @@ public class MessageStrategy extends MoveStrategy{
             // This should resolve most repeating situations
             // Just in case, we prevent the agent from moving for this step. This resolves some "walling" situations
             isPattern = true;
-            stepsToSleep++;
+            dir_pattern = (dir_pattern+1)%2;
             //return null;
         }
 
@@ -60,8 +62,8 @@ public class MessageStrategy extends MoveStrategy{
             // First try to move in the perpendicular directions
             List<Direction> perpendicularDirectionsList = Arrays.asList(DirectionUtils.getPerpendicularDirections(receivedDirection));
             Collections.shuffle(perpendicularDirectionsList,puzzle.getRandom());
-            perpendicularDirectionsList.toArray(perpendicularDirections);
-            for(Direction direction : perpendicularDirections){
+            Direction[] directions = perpendicularDirectionsList.toArray(perpendicularDirections);
+            for(Direction direction : directions){
                 try {
                     if(puzzle.getAgentInDirection(agent,direction)==null){
                         stepsToSleep++;
@@ -118,9 +120,9 @@ public class MessageStrategy extends MoveStrategy{
         }
 
         try{
-            recipient = puzzle.getAgentInDirection(agent,bestDirections[0]);
+            recipient = puzzle.getAgentInDirection(agent,bestDirections[dir_pattern]);
         }catch (Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
             return null;
         }
         // Try to move in the obvious directions first (if no pattern)
@@ -133,7 +135,7 @@ public class MessageStrategy extends MoveStrategy{
 
         // If we couldn't move, something is blocking us. We send a moving message
         if(movedDirection == null && recipient!=null){
-            Message messageSent = new Message(MessageType.MOVE,agent,recipient,bestDirections[0]);
+            Message messageSent = new Message(MessageType.MOVE,agent,recipient,bestDirections[dir_pattern]);
             try {
                 mailBox.sendMessage(recipient,messageSent);
                 return null;

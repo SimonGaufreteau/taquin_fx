@@ -12,12 +12,13 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Puzzle pz = new Puzzle(40,10,10,"messageStrategy",4);
+        Puzzle pz = new Puzzle(18,5,5,"messageStrategy",3);
         Stage st = new Stage();
         HelloApplication happ = new HelloApplication(pz);
 
         pz.addObserver(happ);
         happ.start(st);
+        Thread.sleep(2000);
         pz.runResolution();
     }
 }
