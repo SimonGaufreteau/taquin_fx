@@ -4,6 +4,10 @@
 
 Launch [MainApplication](./src/main/java/com/taquin_fx/MainApplication.java), parameters are editable in the class
 
+## Demonstration on 18 pieces (Video)
+
+https://www.youtube.com/watch?v=b_FuPirml9Q
+
 ## Implemented
 
 - Basic movements
