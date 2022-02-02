@@ -164,7 +164,7 @@ public class HelloApplication extends Application implements Observer {
 
 		sc = new Scene(gP, WINSIZEX, WINSIZEY, true);
 		stage.setScene(sc);
-		stage.setTitle("TAQUIN très TAQUIN");
+		stage.setTitle("Taquin");
 
 		stage.show();
 
